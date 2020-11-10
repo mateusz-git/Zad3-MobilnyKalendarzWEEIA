@@ -1,5 +1,9 @@
 package com.example.Mobilny.Kalendarz.WEEIA;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +18,7 @@ import java.net.URLConnection;
 public class Controller {
     @GetMapping("/calendar")
     public void getCalendar(@RequestParam int year, @RequestParam int month) throws IOException {
-        String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac" + month;
+        String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac=" + month;
         getCalendarFromWeeia(url);
 
     }
@@ -29,7 +33,8 @@ public class Controller {
         while ((line = reader.readLine()) != null) {
             fromWebsite.append(line);
         }
-        String htmlInfo = fromWebsite.toString();
-        System.out.println(htmlInfo);
+        String htmlContent = fromWebsite.toString();
+        Document document = Jsoup.parse(htmlContent);
+        System.out.println(document);
     }
 }
