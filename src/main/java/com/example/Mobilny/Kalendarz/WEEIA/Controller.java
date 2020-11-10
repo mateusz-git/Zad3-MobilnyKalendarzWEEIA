@@ -35,6 +35,10 @@ public class Controller {
         }
         String htmlContent = fromWebsite.toString();
         Document document = Jsoup.parse(htmlContent);
-        System.out.println(document);
+        Elements activeElement = document.select("td.active");
+        for (Element element : activeElement) {
+            System.out.println(element);
+        }
+
     }
 }
