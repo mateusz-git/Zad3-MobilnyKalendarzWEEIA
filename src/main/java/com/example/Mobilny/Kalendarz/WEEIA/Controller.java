@@ -36,9 +36,10 @@ public class Controller {
         String htmlContent = fromWebsite.toString();
         Document document = Jsoup.parse(htmlContent);
         Elements activeElement = document.select("td.active");
-        for (Element element : activeElement) {
-            System.out.println(element);
-        }
+        Elements events = activeElement.select("div.InnerBox");
+        Elements days = activeElement.select("a.active");
 
+        System.out.println(events);
+        System.out.println(days);
     }
 }
