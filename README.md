@@ -4,7 +4,7 @@
 
 ## Zadanie 3 - Mobilny Kalendarz WEEIA
 
-###Endpoint
+### Endpoint
 Metoda : GET
 
 Ścieżka : /calendar?year={year}&month={month} 
@@ -15,7 +15,7 @@ Parametr : month(typ int) - miesiąc dla którego ma być pobrany plik
            
 Opis :  Zwraca plik z rozszerzeniem .ics, który zawiera wydarzenia z danego miesiąca i roku pobranego ze strony ``http://www.weeia.p.lodz.pl/ ``         
 
-##Przykłady użycia
+## Przykłady użycia
 ``
 http://localhost:8080/calendar?year=2020&month=10
 ``
