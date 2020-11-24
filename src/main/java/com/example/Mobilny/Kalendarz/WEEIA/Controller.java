@@ -2,11 +2,10 @@ package com.example.Mobilny.Kalendarz.WEEIA;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import biweekly.component.VEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,16 +16,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 public class Controller {
     private final static String FILE_NAME = "Calendar_weeia.ics";
+
     @GetMapping("/calendar")
-    public String getCalendar(@RequestParam int year, @RequestParam int month) throws IOException {
+    public String getCalendar(@RequestParam int year, @RequestParam int month) throws IOException, ParseException {
         if (year <= 1900 || year >= 2100)
             return "Year is incorrect";
         if (month <= 0 || month > 12)
@@ -40,7 +41,15 @@ public class Controller {
         iCalendar.setExperimentalProperty("X-WR-CALNAME", "Kalendarz");
 
         String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac=" + monthString;
-
+        List<EventDay> eventDays = getCalendarFromWeeia(url);
+        for (EventDay eventDay : eventDays) {
+            VEvent vEvent = new VEvent();
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(year + "-" + monthString + "-" + eventDay.day);
+            vEvent.setDateStart(date);
+            vEvent.setDateEnd(date);
+            vEvent.setSummary(eventDay.description);
+            iCalendar.addEvent(vEvent);
+        }
         File file = new File(FILE_NAME);
         Biweekly.write(iCalendar).go(file);
 
