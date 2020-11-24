@@ -18,10 +18,19 @@ import java.util.List;
 @RestController
 public class Controller {
     @GetMapping("/calendar")
-    public void getCalendar(@RequestParam int year, @RequestParam int month) throws IOException {
-        String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac=" + month;
-        System.out.println(getCalendarFromWeeia(url));
+    public String getCalendar(@RequestParam int year, @RequestParam int month) throws IOException {
+        if (year <= 1900 || year >= 2100)
+            return "Year is incorrect";
+        if (month <= 0 || month > 12)
+            return "Month is incorrect";
 
+        String monthString = String.valueOf(month);
+        if (month < 10)
+            monthString = "0" + monthString;
+
+        String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac=" + monthString;
+        System.out.println(getCalendarFromWeeia(url));
+        return "";
     }
 
     private List<EventDay> getCalendarFromWeeia(String urlWeeia) throws IOException {
