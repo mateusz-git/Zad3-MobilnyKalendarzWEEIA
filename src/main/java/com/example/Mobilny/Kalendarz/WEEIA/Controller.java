@@ -2,7 +2,6 @@ package com.example.Mobilny.Kalendarz.WEEIA;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +20,11 @@ public class Controller {
     @GetMapping("/calendar")
     public void getCalendar(@RequestParam int year, @RequestParam int month) throws IOException {
         String url = "http://www.weeia.p.lodz.pl/pliki_strony_kontroler/kalendarz.php?rok=" + year + "&miesiac=" + month;
-        getCalendarFromWeeia(url);
+        System.out.println(getCalendarFromWeeia(url));
 
     }
 
-    private void getCalendarFromWeeia(String urlWeeia) throws IOException {
+    private List<EventDay> getCalendarFromWeeia(String urlWeeia) throws IOException {
         URL url = new URL(urlWeeia);
         URLConnection connection = url.openConnection();
         StringBuilder fromWebsite = new StringBuilder();
@@ -42,12 +41,9 @@ public class Controller {
         Elements days = activeElement.select("a.active");
 
         List<EventDay> eventDayList = new ArrayList<>();
-        for(int i = 0; i < events.size();i++){
-            eventDayList.add(new EventDay(Integer.parseInt(days.get(i).text()),events.get(i).text()));
+        for (int i = 0; i < events.size(); i++) {
+            eventDayList.add(new EventDay(Integer.parseInt(days.get(i).text()), events.get(i).text()));
         }
-        for (EventDay eventDay : eventDayList) {
-            System.out.println(eventDay);
-        }
-
+        return eventDayList;
     }
 }
