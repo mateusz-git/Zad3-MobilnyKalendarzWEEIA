@@ -31,7 +31,7 @@ import java.util.List;
 
 @RestController
 public class Controller {
-    private final static String FILE_NAME = "Calendar_weeia.ics";
+    private final static String FILE_NAME = "Calendar_weeia";
 
     @GetMapping("/calendar")
     public ResponseEntity getCalendar(@RequestParam int year, @RequestParam int month) throws IOException, ParseException {
@@ -57,9 +57,9 @@ public class Controller {
             vEvent.setSummary(eventDay.description);
             iCalendar.addEvent(vEvent);
         }
-        File file = new File(FILE_NAME);
+        File file = new File(FILE_NAME + "_" + year + "_" + monthString + ".ics");
         Biweekly.write(iCalendar).go(file);
-        Path path = Paths.get(FILE_NAME);
+        Path path = Paths.get(FILE_NAME + "_" + year + "_" + monthString + ".ics");
         Resource resource = new UrlResource(path.toUri());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
