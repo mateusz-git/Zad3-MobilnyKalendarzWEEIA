@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class Controller {
@@ -39,7 +41,13 @@ public class Controller {
         Elements events = activeElement.select("div.InnerBox");
         Elements days = activeElement.select("a.active");
 
-        System.out.println(events);
-        System.out.println(days);
+        List<EventDay> eventDayList = new ArrayList<>();
+        for(int i = 0; i < events.size();i++){
+            eventDayList.add(new EventDay(Integer.parseInt(days.get(i).text()),events.get(i).text()));
+        }
+        for (EventDay eventDay : eventDayList) {
+            System.out.println(eventDay);
+        }
+
     }
 }
