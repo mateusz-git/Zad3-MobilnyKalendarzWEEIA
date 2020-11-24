@@ -6,6 +6,11 @@ import biweekly.component.VEvent;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,11 +34,11 @@ public class Controller {
     private final static String FILE_NAME = "Calendar_weeia.ics";
 
     @GetMapping("/calendar")
-    public String getCalendar(@RequestParam int year, @RequestParam int month) throws IOException, ParseException {
+    public ResponseEntity getCalendar(@RequestParam int year, @RequestParam int month) throws IOException, ParseException {
         if (year <= 1900 || year >= 2100)
-            return "Year is incorrect";
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Year is incorrect");
         if (month <= 0 || month > 12)
-            return "Month is incorrect";
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Month is incorrect");
 
         String monthString = String.valueOf(month);
         if (month < 10)
@@ -52,8 +59,11 @@ public class Controller {
         }
         File file = new File(FILE_NAME);
         Biweekly.write(iCalendar).go(file);
-
-        return "";
+        Path path = Paths.get(FILE_NAME);
+        Resource resource = new UrlResource(path.toUri());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename())
+                .body(resource);
     }
 
     private List<EventDay> getCalendarFromWeeia(String urlWeeia) throws IOException {
